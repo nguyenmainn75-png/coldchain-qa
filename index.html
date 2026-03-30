@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cold Chain QA — Giám sát Dây truyền Lạnh</title>
+    <meta name="description" content="Hệ thống giám sát chất lượng dây truyền lạnh cho trung tâm tiêm chủng">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="app-header">
+        <div class="logo">❄️ Cold Chain QA</div>
+        <div class="subtitle">Hệ thống Giám sát Dây truyền Lạnh — FPT Long Châu</div>
+    </header>
+
+    <!-- Tab Navigation -->
+    <nav class="tab-nav">
+        <button class="tab-btn active" data-tab="report" id="tab-btn-report">📋 Báo cáo sự cố</button>
+        <button class="tab-btn" data-tab="support" id="tab-btn-support">💬 Hỗ trợ xử trí sự cố</button>
+    </nav>
+
+    <!-- ============ TAB 1: GOOGLE FORM EMBED ============ -->
+    <section id="tab-report" class="tab-content active">
+        <!-- Setup bar — chỉ hiện khi chưa có URL -->
+        <div id="formSetup" class="form-setup-card glass-card">
+            <div class="card-title"><span>🔗</span> Cấu hình Google Form</div>
+            <p class="setup-desc">Paste link Google Form của bạn để nhúng vào hệ thống. Data sẽ tự động ghi vào Google
+                Sheets.</p>
+            <div class="setup-input-row">
+                <input type="url" id="googleFormUrl" class="form-input"
+                    placeholder="https://forms.gle/... hoặc https://docs.google.com/forms/d/e/..." value="">
+                <button class="btn-embed" id="btnEmbed">Nhúng Form</button>
+            </div>
+            <span class="form-hint">💡 Tạo Google Form → Chia sẻ → Lấy link → Paste vào đây</span>
+        </div>
+
+        <!-- Iframe container -->
+        <div id="formContainer" class="form-embed-container">
+            <div class="form-embed-header">
+                <span class="form-embed-title">📋 Báo cáo sự cố quá nhiệt</span>
+                <div class="form-embed-actions">
+                    <button class="btn-icon" id="btnOpenNew" title="Mở trong tab mới">🔗</button>
+                    <button class="btn-icon" id="btnChangeForm" title="Đổi Google Form">⚙️</button>
+                </div>
+            </div>
+            <iframe id="googleFormIframe" class="google-form-iframe" frameborder="0" marginheight="0" marginwidth="0"
+                allowfullscreen>
+                Đang tải...
+            </iframe>
+        </div>
+    </section>
+
+    <!-- ============ TAB 2: SUPPORT CHATBOT ============ -->
+    <section id="tab-support" class="tab-content">
+        <div class="chat-layout">
+            <div class="glass-card" style="padding:0;overflow:hidden">
+                <div style="padding:1rem 1.25rem;border-bottom:1px solid var(--border-subtle)">
+                    <div class="card-title" style="margin-bottom:0"><span>🤖</span> Trợ lý xử trí sự cố</div>
+                </div>
+                <div class="chat-container" id="chatContainer"></div>
+                <div class="chat-input-area">
+                    <input type="text" class="chat-input" id="chatInput"
+                        placeholder="Nhập mô tả sự cố hoặc chọn mục bên trên...">
+                    <button class="btn-send" id="btnSend" title="Gửi">➤</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <footer class="app-footer">
+        Cold Chain QA Agent v2.0 — FPT Long Châu Quality Assurance © 2026
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
