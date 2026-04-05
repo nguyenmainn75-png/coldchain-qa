@@ -57,9 +57,13 @@
     <!-- ============ TAB 2: SUPPORT CHATBOT ============ -->
     <section id="tab-support" class="tab-content">
         <div class="chat-layout">
-            <div class="glass-card" style="padding:0;overflow:hidden">
-                <div style="padding:1rem 1.25rem;border-bottom:1px solid var(--border-subtle)">
-                    <div class="card-title" style="margin-bottom:0"><span>🤖</span> Trợ lý xử trí sự cố</div>
+            <!-- Main Chat Area -->
+            <div class="chat-main glass-card">
+                <div class="card-header-sleek">
+                    <div class="chat-header-content">
+                        <img src="mascot.png" class="chat-mascot-img" alt="Mascot">
+                        <div class="card-title"><span>🤖</span> Trợ lý xử trí sự cố</div>
+                    </div>
                 </div>
                 <div class="chat-container" id="chatContainer"></div>
                 <div class="chat-input-area">
@@ -68,6 +72,98 @@
                     <button class="btn-send" id="btnSend" title="Gửi">➤</button>
                 </div>
             </div>
+
+            <!-- Contact Sidebar -->
+            <aside class="qa-sidebar">
+                <div class="qa-sidebar-header">
+                    <span>📞</span> Danh sách QA phụ trách
+                </div>
+                <div class="qa-list">
+
+                    <div class="qa-card">
+                        <div class="qa-avatar">TR</div>
+                        <div class="qa-body">
+                            <div class="qa-name">TrangTTT118</div>
+                            <div class="qa-role">Phụ trách chung</div>
+                            <div class="qa-phone-row">
+                                <span class="qa-phone">0965 562 197</span>
+                                <button class="btn-copy-qa" onclick="copyQA(this,'0965562197')">Copy</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="qa-divider"></div>
+
+                    <div class="qa-card">
+                        <div class="qa-avatar">TR</div>
+                        <div class="qa-body">
+                            <div class="qa-name">TrangHTN2</div>
+                            <div class="qa-role">Vắc xin hư hỏng, bể vỡ</div>
+                            <div class="qa-phone-row">
+                                <span class="qa-phone">0961 563 595</span>
+                                <button class="btn-copy-qa" onclick="copyQA(this,'0961563595')">Copy</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="qa-divider"></div>
+
+                    <div class="qa-card">
+                        <div class="qa-avatar">AN</div>
+                        <div class="qa-body">
+                            <div class="qa-name">AnhNP95</div>
+                            <div class="qa-role">Thừa thiếu LCNB</div>
+                            <div class="qa-phone-row">
+                                <span class="qa-phone">0975 793 361</span>
+                                <button class="btn-copy-qa" onclick="copyQA(this,'0975793361')">Copy</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="qa-divider"></div>
+
+                    <div class="qa-card">
+                        <div class="qa-avatar">AN</div>
+                        <div class="qa-body">
+                            <div class="qa-name">AnhNTM67</div>
+                            <div class="qa-role">Dây chuyền lạnh</div>
+                            <div class="qa-phone-row">
+                                <span class="qa-phone">0888 663 877</span>
+                                <button class="btn-copy-qa" onclick="copyQA(this,'0888663877')">Copy</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="qa-divider"></div>
+
+                    <div class="qa-card">
+                        <div class="qa-avatar">DU</div>
+                        <div class="qa-body">
+                            <div class="qa-name">DuongVNT</div>
+                            <div class="qa-role">Hỗ trợ camera AI</div>
+                            <div class="qa-phone-row">
+                                <span class="qa-phone">0787 828 397</span>
+                                <button class="btn-copy-qa" onclick="copyQA(this,'0787828397')">Copy</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="qa-divider"></div>
+
+                    <div class="qa-card">
+                        <div class="qa-avatar">NH</div>
+                        <div class="qa-body">
+                            <div class="qa-name">NhuanBD2</div>
+                            <div class="qa-role">Hỗ trợ thanh kiểm tra nhà nước</div>
+                            <div class="qa-phone-row">
+                                <span class="qa-phone">0972 679 141</span>
+                                <button class="btn-copy-qa" onclick="copyQA(this,'0972679141')">Copy</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </aside>
         </div>
     </section>
 

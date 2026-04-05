@@ -655,16 +655,11 @@ const UI = {
         const wrap = document.createElement('div');
         wrap.className = 'chat-msg bot';
 
-        const av = document.createElement('div');
-        av.className = 'chat-avatar';
-        av.textContent = '🤖';
-
         const bub = document.createElement('div');
         bub.className = 'chat-bubble';
         if (isHTML) bub.innerHTML = content;
         else { bub.style.whiteSpace = 'pre-line'; bub.innerText = content; }
 
-        wrap.appendChild(av);
         wrap.appendChild(bub);
         this.elements.chatContainer.appendChild(wrap);
         this.elements.chatContainer.scrollTop = this.elements.chatContainer.scrollHeight;
@@ -674,15 +669,10 @@ const UI = {
         const wrap = document.createElement('div');
         wrap.className = 'chat-msg user';
 
-        const av = document.createElement('div');
-        av.className = 'chat-avatar';
-        av.textContent = '👤';
-
         const bub = document.createElement('div');
         bub.className = 'chat-bubble';
         bub.innerText = content;
 
-        wrap.appendChild(av);
         wrap.appendChild(bub);
         this.elements.chatContainer.appendChild(wrap);
         this.elements.chatContainer.scrollTop = this.elements.chatContainer.scrollHeight;
@@ -691,10 +681,6 @@ const UI = {
     _quickReplies(items) {
         const wrap = document.createElement('div');
         wrap.className = 'chat-msg bot';
-
-        const av = document.createElement('div');
-        av.className = 'chat-avatar';
-        av.textContent = '🤖';
 
         const box = document.createElement('div');
         box.className = 'chat-quick-replies';
@@ -715,7 +701,6 @@ const UI = {
             box.appendChild(btn);
         });
 
-        wrap.appendChild(av);
         wrap.appendChild(box);
         this.elements.chatContainer.appendChild(wrap);
         this.elements.chatContainer.scrollTop = this.elements.chatContainer.scrollHeight;
@@ -727,15 +712,10 @@ const UI = {
         wrap.className = 'chat-msg bot';
         wrap.id = 'typing-indicator';
 
-        const av = document.createElement('div');
-        av.className = 'chat-avatar';
-        av.textContent = '🤖';
-
         const bub = document.createElement('div');
         bub.className = 'chat-bubble typing-bubble';
         bub.innerHTML = '<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
 
-        wrap.appendChild(av);
         wrap.appendChild(bub);
         this.elements.chatContainer.appendChild(wrap);
         this._typingEl = wrap;
@@ -778,5 +758,30 @@ function copyPhone(phone) {
             UI.showToast(`✅ Đã copy: ${phone}`, 'success');
         });
 }
+
+function copyQA(btn, phone) {
+    const raw = phone.replace(/\s/g, '');
+    const doCopy = () => {
+        btn.textContent = 'Copied ✓';
+        btn.classList.add('copied');
+        setTimeout(() => {
+            btn.textContent = 'Copy';
+            btn.classList.remove('copied');
+        }, 2000);
+        UI.showToast(`✅ Đã copy: ${phone}`, 'success');
+    };
+    navigator.clipboard.writeText(raw)
+        .then(doCopy)
+        .catch(() => {
+            const el = document.createElement('input');
+            el.value = raw;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            doCopy();
+        });
+}
+
 
 document.addEventListener('DOMContentLoaded', () => UI.init());
