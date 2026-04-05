@@ -1,406 +1,782 @@
 // ============================================================
 // COLD CHAIN QA AGENT v2.0 — KWSR Architecture
-// Hệ thống Giám sát Dây truyền Lạnh
+// Hệ thống Giám sát Dây truyền Lạnh — FPT Long Châu
 // ============================================================
 'use strict';
 
 // ⚙️ CẤU HÌNH
 const CONFIG = {
-    // URL Google Form mặc định — điều dưỡng điền form trực tiếp
     DEFAULT_FORM_URL: 'https://docs.google.com/forms/d/e/1FAIpQLSd5Z12RNKBlEoZqQouhHN9G5Jy-giY7tOTqJdPnb5Fi7RYmWw/viewform?embedded=true',
     STORAGE_KEY: 'coldchain_form_url',
+    QA_FALLBACK_NAME: 'QA AnhNTM67',
+    QA_FALLBACK_PHONE: '0888663877',
 };
 
 // ============================================================
-// 📚 KNOWLEDGE BASE (K)
+// 📚 KNOWLEDGE BASE (K) — 21 Kịch Bản
 // ============================================================
 const KnowledgeBase = {
-    // SOP dải nhiệt độ an toàn
-    // Căn cứ: TT 34/2018/TT-BYT (Phụ lục VIII) — Bảo quản vaccine trong dây chuyền lạnh
-    // NĐ 104/2016/NĐ-CP (Điều 8) — Nhiệt độ bảo quản 2-8°C
-    // ⚠️ BẤT KỲ nhiệt độ nào vượt ngưỡng 2-8°C = BÁO ĐỘNG ĐỎ
     sop: {
         tempMin: 2, tempMax: 8,
         legalRef: 'TT 34/2018/TT-BYT (Phụ lục VIII), NĐ 104/2016/NĐ-CP (Điều 8)',
         rule: 'BẤT KỲ nhiệt độ ngoài dải 2-8°C = BÁO ĐỘNG ĐỎ. Xử trí NGAY LẬP TỨC.',
-        source: 'https://thuvienphapluat.vn/van-ban/The-thao-Y-te/Thong-tu-34-2018-TT-BYT-huong-dan-Nghi-dinh-104-2016-ND-CP-ve-hoat-dong-tiem-chung-400318.aspx',
     },
 
-    // Thông tin liên hệ QA
-    qaContact: { name: 'QA AnhNTM67', phone: '0987 654 321' },
-
-    // =====================================================
-    // 💬 KỊCH BẢN CHATBOT — THÊM KỊCH BẢN TẠI ĐÂY
-    // Mỗi kịch bản gồm:
-    //   id: mã định danh duy nhất
-    //   title: tiêu đề hiển thị nút
-    //   icon: emoji icon
-    //   keywords: từ khóa tìm kiếm (viết thường)
-    //   steps: mảng các bước hướng dẫn (string)
-    //   note: ghi chú thêm (tùy chọn)
-    // =====================================================
     chatbotScenarios: [
         {
-            id: 'logtag_no_pin',
-            title: 'LogTag không hiện pin / màn hình tắt',
+            id: 'stt1', stt: '1',
+            title: 'Logtag đã thay pin nhưng không hiển thị',
             icon: '🔋',
-            keywords: ['logtag', 'pin', 'màn hình', 'không hiện', 'tắt', 'trống', 'đen'],
+            keywords: ['logtag', 'pin', 'thay pin', 'pin logtag', 'lỏng pin', 'vạch pin', 'battery', 'không hiển thị sau khi thay', 'không lên sau khi thay pin'],
             steps: [
-                'Lật mặt sau LogTag, tìm nắp khe pin (hình chữ nhật nhỏ)',
-                'Mở nắp → kiểm tra pin CR2032 có bị lỏng / xê dịch không',
-                'Nếu pin lỏng: kéo miếng kim loại tiếp xúc pin lên lại để pin khớp chặt hơn',
-                'Đóng nắp pin, đợi 5 giây → kiểm tra màn hình LogTag',
-                'Nếu vẫn không hiện → thay pin CR2032 mới, mua tại cửa hàng điện tử',
+                'Có thể là do lỏng pin → tháo pin ra.',
+                'Kiểm tra 2 miếng kim loại ở 2 đầu: Kéo sát miếng kim loại đó về phía pin (kéo ra ngoài).',
+                'Lắc lắc thử đến khi lên vạch pin.',
+                'Lắp pin lại logtag.',
             ],
-            note: 'Nếu đã thay pin mới mà vẫn không hoạt động → có thể LogTag hỏng, liên hệ QA để đổi thiết bị.',
+            contact: 'QA QuyenDN4: 0765647301 / QA AnhNTM67: 0888663877 / QA TinhHD4: 0909338535',
+            images: ['stt1.jpg'],
         },
         {
-            id: 'fridge_too_hot',
-            title: 'Tủ lạnh không đạt nhiệt độ (quá nóng)',
-            icon: '🌡️',
-            keywords: ['tủ', 'nóng', 'không lạnh', 'nhiệt độ cao', 'quá nhiệt', 'không đạt'],
+            id: 'stt2', stt: '2',
+            title: 'Màn hình logtag hiển thị tình trạng bất thường',
+            icon: '🖥️',
+            keywords: ['logtag', 'màn hình', 'bất thường', 'ký hiệu lạ', 'cài lại logtag', 'record readings', 'configure', 'màn hình lạ', 'biểu tượng lạ', 'màn hình logtag bất thường', 'logtag hiển thị lạ'],
             steps: [
-                'Kiểm tra cửa tủ có đóng kín không → đóng lại nếu hở',
-                'Kiểm tra gioăng cửa tủ có bị hở/cong không (dùng giấy A4 kẹp cửa, nếu rút dễ → gioăng hỏng)',
-                'Kiểm tra quạt gió bên trong tủ có hoạt động không',
-                'Kiểm tra không xếp quá nhiều hàng che quạt gió / lỗ thông gió',
-                'Kiểm tra nguồn điện ổ cắm có ổn định không',
-                'Nếu vẫn không cải thiện sau 30 phút → Báo cáo sự cố + liên hệ kỹ thuật',
+                'Xuất hết dữ liệu rồi cài lại logtag theo hướng dẫn sau:',
+                'Trong ứng dụng Logtag → chọn mục Logtag Online.',
+                'Chọn "Record readings continuously..." → Bấm Configure.',
             ],
+            contact: 'QA QuyenDN4: 0765647301 / QA AnhNTM67: 0888663877 / QA TinhHD4: 0909338535',
+            images: ['stt2.jpg', '3.png', '4.png'],
         },
         {
-            id: 'power_outage',
-            title: 'Mất điện — Xử lý vaccine NGAY LẬP TỨC',
+            id: 'stt3', stt: '3',
+            title: 'USB tủ đông không xuất được dữ liệu',
+            icon: '💾',
+            keywords: ['usb', 'xuất dữ liệu', 'tủ đứng', 'không xuất', 'xuất dữ liệu usb', 'usb tủ đông', 'usb không nhận'],
+            steps: [
+                'Báo vào group QA - Điều dưỡng về tình trạng USB tủ đứng.',
+                'Liên hệ NCC Thanh Liêm: 0932235326 hoặc NCC Nqn: 0352931653 để được hỗ trợ.',
+            ],
+            contact: 'NCC Thanh Liêm: 0932235326 / NCC Nqn: 0352931653',
+            images: ['stt3.jpg'],
+        },
+        {
+            id: 'stt4', stt: '4',
+            title: 'Màn hình logtag không hiển thị (tắt hoàn toàn)',
+            icon: '🌑',
+            keywords: ['logtag', 'màn hình', 'không hiển thị', 'màn hình tắt', 'tối màn hình', 'không lên màn hình', 'reset logtag', 'màn hình logtag không', 'logtag không hiển thị'],
+            steps: [
+                'Kiểm tra kết nối nguồn điện có ổn định không.',
+                'Kiểm tra pin logtag còn không.',
+                'Nếu nguồn ổn định và pin còn → rút logtag → cắm vào máy tính xuất dữ liệu → Reset lại logtag.',
+            ],
+            contact: 'QA QuyenDN4: 0765647301 / QA AnhNTM67: 0888663877 / QA TinhHD4: 0909338535',
+            images: ['stt4.jpg'],
+        },
+        {
+            id: 'stt5', stt: '5',
+            title: 'Logtag đột nhiên xuống nhiệt độ bất ngờ rồi trở lại bình thường',
+            icon: '📉',
+            keywords: ['logtag', 'đầu dò', 'xuống đột ngột', 'âm 55', '-55', 'probe', 'lỏng đầu dò', 'cảm biến lỏng', 'bất ngờ giảm', 'nhiệt độ xuống'],
+            steps: [
+                'Trường hợp này thường do bị lỏng đầu dò.',
+                'Anh/chị hãy găm kỹ lại đầu dò vào thiết bị.',
+            ],
+            contact: 'QA QuyenDN4: 0765647301 / QA AnhNTM67: 0888663877 / QA TinhHD4: 0909338535',
+            images: ['stt5.jpg'],
+        },
+        {
+            id: 'stt6', stt: '6',
+            title: 'Logtag mất kết nối wifi / đám mây',
+            icon: '🌐',
+            keywords: ['logtag', 'wifi', 'mạng', 'mất kết nối', 'đám mây', 'cloud', 'offline', 'internet', 'logtag không lên mạng', 's/n', 'kết nối wifi', 'mạng yếu'],
+            steps: [
+                'TH mất kết nối Wifi: Kiểm tra lại modem/internet của shop.',
+                'TH mất kết nối Cloud: Kiểm tra S/N trên logtag có khớp trên Logtag Online không.',
+                'Nếu khớp: Do đường truyền yếu → Kiểm tra lại mạng.',
+                'Nếu không khớp: Liên hệ QA để được hỗ trợ.',
+            ],
+            contact: 'QA QuyenDN4: 0765647301',
+            images: ['stt6a.jpg', 'stt6b.jpg'],
+        },
+        {
+            id: 'stt7', stt: '7',
+            title: 'Không đẩy được báo cáo chứng từ nhiệt độ LCNB trên RSA',
+            icon: '📤',
+            keywords: ['rsa', 'lcnb', 'không đẩy', '5mb', 'quá dung lượng', 'chứng từ', 'báo cáo rsa', 'upload rsa', 'file lớn', 'đẩy rsa', 'không lên rsa', 'báo cáo chứng từ', 'đẩy được', 'đẩy lên rsa'],
+            steps: [
+                'RSA không nhận file > 5MB.',
+                'Cần nén hoặc tách nhỏ file: tách hình logtag và hình thùng riêng.',
+                'Nếu nhận nhiều lệnh → tách ra đẩy từng lệnh riêng.',
+            ],
+            contact: 'QA QuyenDN4: 0765647301 / QA AnhNTM67: 0888663877 / QA TinhHD4: 0909338535',
+            images: ['stt7.jpg'],
+        },
+        {
+            id: 'stt8', stt: '8',
+            title: 'Logtag không hiển thị nhiệt độ sau khi mất điện đột ngột',
             icon: '⚡',
-            keywords: ['mất điện', 'cúp điện', 'điện', 'power', 'tối'],
+            keywords: ['logtag', 'màn hình', 'mất điện', 'cúp điện', 'ngắt điện', 'không hiển thị số', 'sau mất điện', 'logtag mất điện', 'bị mất điện'],
             steps: [
-                '🚨 HÀNH ĐỘNG NGAY LẬP TỨC: Vận chuyển TOÀN BỘ vaccine từ TỦ ĐỨNG sang TỦ NGANG — KHÔNG chần chừ!',
-                '🔒 HẠN CHẾ MỞ TỦ NGANG nhất có thể — mỗi lần mở cửa = nhiệt độ tăng, vaccine bị ảnh hưởng',
-                '❌ KHÔNG mở tủ đứng kiểm tra khi mất điện — giữ nguyên trạng thái đóng để giữ lạnh',
-                'Ghi nhận CHÍNH XÁC thời gian bắt đầu mất điện (giờ:phút) vào sổ theo dõi',
-                'Sử dụng thùng lạnh (cold box) + ice pack nếu cần di chuyển vaccine xa',
-                'Theo dõi LogTag LIÊN TỤC để ghi nhận nhiệt độ tại tủ ngang',
-                'Nếu KHÔNG có tủ ngang dự phòng → chuyển vaccine sang kho Hub gần nhất NGAY',
-                '📋 BÁO CÁO SỰ CỐ NGAY trên hệ thống (Tab Báo cáo sự cố) — ghi rõ giờ bắt đầu và kết thúc mất điện',
+                'Khi có điện: cắm logtag vào máy tính xuất dữ liệu, reset log sẽ hiện lại.',
+                'Lưu ý: Trong lúc mất điện logtag vẫn ghi nhận nhiệt độ bình thường.',
             ],
-            note: 'Căn cứ: TT 34/2018/TT-BYT (Phụ lục VIII) & NĐ 104/2016/NĐ-CP (Điều 8): Vaccine PHẢI được bảo quản 2-8°C. Bất kỳ gián đoạn dây chuyền lạnh → xử trí NGAY LẬP TỨC để bảo toàn chất lượng vaccine.',
+            contact: 'QA QuyenDN4: 0765647301 / QA AnhNTM67: 0888663877 / QA TinhHD4: 0909338535',
+            images: ['stt8.jpg'],
         },
         {
-            id: 'logtag_overheat',
-            title: 'LogTag báo quá nhiệt nhưng tủ bình thường',
-            icon: '📊',
-            keywords: ['logtag', 'quá nhiệt', 'báo', 'sai', 'chênh lệch', 'tủ bình thường'],
+            id: 'stt9', stt: '9',
+            title: 'Hiển thị hết pin cúc áo',
+            icon: '🪫',
+            keywords: ['logtag', 'pin', 'pin cúc áo', 'pin cúc', 'pin nhỏ', 'hết pin nhỏ', 'pin đồng xu', 'bảo hành pin', 'hết pin', 'pin logtag'],
             steps: [
-                'Kiểm tra vị trí đặt LogTag: có gần cửa tủ / cửa gió nóng không?',
-                'LogTag nên đặt ở giữa tủ, cách thành tủ ít nhất 5cm',
-                'So sánh với nhiệt kế thủy ngân đặt cạnh LogTag (đợi 15 phút)',
-                'Nếu chênh lệch > 2°C → LogTag có thể bị lỗi sensor',
-                'Chụp ảnh màn hình LogTag + nhiệt kế → gửi QA đánh giá',
+                'Anh/Chị KHÔNG tự ý thay pin.',
+                'Báo Hành chính để gửi thiết bị đi bảo hành và nhận máy mới.',
             ],
+            contact: 'Báo hành chính',
+            images: ['stt9.png'],
         },
         {
-            id: 'fridge_noise',
-            title: 'Tủ lạnh kêu/rung bất thường',
+            id: 'stt10', stt: '10',
+            title: 'Nhờ phân quyền link báo cáo nhiệt độ trên SharePoint',
+            icon: '🔗',
+            keywords: ['sharepoint', 'phân quyền', 'link báo cáo', 'phân quyền sharepoint', 'link sharepoint', 'quyền báo cáo nhiệt độ', 'báo cáo sharepoint'],
+            steps: [
+                'Gửi tên shop + Mail FPT đến QA AnhNTM67: 0888663877 để được hỗ trợ.',
+            ],
+            contact: 'QA AnhNTM67: 0888663877',
+            images: ['stt10.jpg'],
+        },
+        {
+            id: 'stt11', stt: '11',
+            title: 'Nhờ phân quyền theo dõi Logtag Online',
+            icon: '🖥️',
+            keywords: ['logtag', 'logtag online', 'phân quyền logtag', 'theo dõi logtag online', 'logtag online quyền', 'quyền logtag online', 'theo dõi logtag'],
+            steps: [
+                'Gửi tên shop + Mail FPT đến QA QuyenDN4: 0765647301 để được hỗ trợ.',
+            ],
+            contact: 'QA QuyenDN4: 0765647301',
+            images: ['stt11.jpg'],
+        },
+        {
+            id: 'stt12', stt: '12',
+            title: 'Nhận Logtag mới từ Hành Chính thay thế Logtag cũ',
+            icon: '🆕',
+            keywords: ['logtag', 'logtag mới', 'thay logtag', 'nhận logtag', 'cài đặt logtag mới', 'logtag hành chính', 'đổi logtag'],
+            steps: [
+                'Liên hệ QA QuyenDN4: 0765647301 để được hỗ trợ cấu hình máy mới.',
+            ],
+            contact: 'QA QuyenDN4: 0765647301',
+            images: ['stt12.jpg'],
+        },
+        {
+            id: 'stt13', stt: '13',
+            title: 'Hỗ trợ cấp túi đá gel',
+            icon: '🧊',
+            keywords: ['đá gel', 'túi đá', 'gel', 'cấp đá', 'xin đá gel', 'thêm đá'],
+            steps: [
+                'Vui lòng nhắn tin trong Group Shop - Kho để được hỗ trợ.',
+            ],
+            contact: 'Group Shop - Kho',
+            images: ['stt13.jpg'],
+        },
+        {
+            id: 'stt14', stt: '14',
+            title: 'Hàng vắc xin hết hạn sử dụng chuyển kho gì?',
+            icon: '📅',
+            keywords: ['vắc xin', 'hsd', 'vắc xin hết hạn', 'hết hạn sử dụng', 'chuyển kho', 'thanh lý', 'chuyển kho thanh lý', 'vaccine hết hạn'],
+            steps: [
+                'Thực hiện trên mRSA.',
+                'Vắc xin cúm: chuyển đúng ngày hết hạn.',
+                'Vắc xin khác: chuyển trước ngày hết HSD 1 tháng.',
+            ],
+            contact: 'QA TrangHTN2: 0961563595',
+            images: ['stt14.jpg'],
+        },
+        {
+            id: 'stt15', stt: '15',
+            title: 'Hàng vắc xin không đạt chất lượng (lỗi NSX, hư hỏng, bể vỡ)',
+            icon: '⚠️',
+            keywords: ['vắc xin', 'lỗi nsx', 'không đạt chất lượng', 'hư hỏng', 'bể vỡ', 'vắc xin hỏng', 'vắc xin lỗi', 'chờ xử lý', 'vaccine hỏng'],
+            steps: [
+                'Báo lên group QA - Điều dưỡng ngay lập tức.',
+                'Chuyển kho "Chờ xử lý" trên mRSA.',
+                'Biệt trữ tại trung tâm theo đúng dải nhiệt độ 2-8°C.',
+            ],
+            contact: 'Group QA - Điều dưỡng',
+            images: ['stt15.jpg'],
+        },
+        {
+            id: 'stt16', stt: '16',
+            title: 'Lọ bột đông khô BCG hết HSD — dung môi kèm chưa hết, có chuyển thanh lý chung không?',
+            icon: '🧪',
+            keywords: ['vắc xin', 'bcg', 'đông khô', 'dung môi', 'lao', 'bột đông khô', 'thanh lý chung', 'bột và dung môi', 'vaccine bcg'],
+            steps: [
+                'Chuyển thanh lý cả cặp (Bột + Dung môi) mặc dù dung môi còn hạn.',
+                'Do tính chất vaccine này đi kèm theo bộ tương ứng.',
+            ],
+            contact: 'QA TrangHTN2: 0961563595',
+            images: ['stt16.jpg'],
+        },
+        {
+            id: 'stt17', stt: '17',
+            title: 'Đơn cọc vệ tinh ghi nhận sai thông tin dược sĩ',
+            icon: '📝',
+            keywords: ['dược sĩ', 'asm', 'vệ tinh', 'cọc vệ tinh', 'sai thông tin dược sĩ', 'dược sĩ sai', 'đơn vệ tinh'],
+            steps: [
+                'ASM thực hiện điền template hàng tháng gửi Group BU - Vùng.',
+                'BU tiếp nhận điều chỉnh trong 3 ngày đầu tháng.',
+                'Nếu trễ → để tháng sau.',
+            ],
+            contact: 'Báo ASM Vùng',
+            images: ['stt17.jpg'],
+        },
+        {
+            id: 'stt18', stt: '18',
+            title: 'Phát hiện gian lận tài chính hoặc tranh chấp đơn hàng sai quy định',
+            icon: '⚖️',
+            keywords: ['gian lận', 'tài chính', 'tranh chấp', 'ksnb', 'đơn hàng sai', 'gian lận tài chính'],
+            steps: [
+                'Trình bày sự việc kèm hình ảnh bằng chứng.',
+                'Gửi mail đến: FLC.KSNB@fpt.com',
+                'Vui lòng CC các quản lý trực tiếp liên quan.',
+            ],
+            contact: 'FLC.KSNB@fpt.com',
+            images: ['stt18.jpg'],
+        },
+        {
+            id: 'stt19', stt: '19',
+            title: 'Thời gian mở tủ đông / tủ ngang tối đa bao lâu?',
+            icon: '⏲️',
+            keywords: ['tủ đông', 'tủ ngang', 'mở tủ', 'thời gian mở', 'bao lâu mở', '30 giây', 'tủ đứng thời gian', 'tủ ngang thời gian', '5 phút', 'thời gian tủ'],
+            steps: [
+                'Tủ đứng: Tối đa 30 giây mỗi lần mở.',
+                'Tủ ngang: Tối đa 2 phút mỗi lần mở.',
+                'Quan trọng: Chỉ mở lại sau lần mở trước ít nhất 5 phút.',
+            ],
+            contact: null,
+            images: ['stt19.jpg'],
+        },
+        {
+            id: 'stt21', stt: '21',
+            title: 'Cánh quạt tủ đông không quay khi đóng tủ trong một khoảng thời gian',
+            icon: '🌬️',
+            keywords: ['tủ đông', 'quạt', 'cánh quạt', 'quạt không quay', 'xả đá', 'quạt tủ không quay', 'quạt tắt', 'xả đá cưỡng bức'],
+            steps: [
+                'Tủ đang ở trạng thái xả đá cưỡng bức → Mở cửa tủ 1 phút rồi đóng lại.',
+                'Lưu ý: KHÔNG có vaccine trong tủ khi thực hiện.',
+                'Nếu vẫn không quay → Liên hệ NCC kỹ thuật.',
+            ],
+            contact: 'NCC Thanh Liêm: 0932235326 / NCC Nqn: 0352931653',
+            images: ['stt21.jpg'],
+        },
+        {
+            id: 'stt23', stt: '23',
+            title: 'Tủ ngang kêu / phát tiếng động lạ',
             icon: '🔊',
-            keywords: ['kêu', 'rung', 'tiếng', 'ồn', 'bất thường', 'lạ'],
+            keywords: ['tủ ngang', 'tủ ngang kêu', 'tủ kêu', 'kêu to', 'ồn', 'tiếng kêu lạ', 'phát tiếng', 'tủ ồn'],
             steps: [
-                'Kiểm tra tủ đặt trên mặt phẳng, không bị nghiêng',
-                'Kiểm tra chân tủ có bị lỏng / không đều không',
-                'Kiểm tra dàn ngưng (phía sau tủ) có bám bụi nhiều không → vệ sinh',
-                'Tắt tủ 15 phút → bật lại, theo dõi tiếng kêu',
-                'Nếu vẫn kêu → ghi nhận và liên hệ kỹ thuật bảo trì',
+                'Kiểm tra lại kết nối điện (đèn và quạt) và cắm lại phích cắm điện.',
+                '⚠️ Nếu nhiệt độ đang tăng → Gọi ngay cho QA TinhHD4: 0909338535.',
             ],
-        },
-        {
-            id: 'gasket_broken',
-            title: 'Gioăng tủ hở / hỏng',
-            icon: '🚪',
-            keywords: ['gioăng', 'hở', 'hỏng', 'cửa', 'không kín', 'khe hở'],
-            steps: [
-                'Test bằng giấy A4: kẹp giữa cửa tủ và gioăng rồi đóng cửa',
-                'Kéo giấy ra: nếu rút dễ dàng → gioăng hỏng',
-                'Kiểm tra toàn bộ 4 cạnh gioăng (trên, dưới, trái, phải)',
-                'Nếu hỏng 1 cạnh → có thể tạm xử lý bằng cách đóng cửa chắc hơn',
-                'Báo cáo sự cố để QA sắp xếp thay gioăng mới',
-            ],
+            contact: 'QA TinhHD4: 0909338535',
+            images: ['stt23.jpg'],
         },
     ],
 };
 
 // ============================================================
-// 🔧 SKILLS (S) — Chatbot
+// 🗺️ SYNONYM MAP — Ánh xạ từ đồng nghĩa (Anh → Việt)
+// ============================================================
+const SYNONYM_MAP = {
+    'battery': 'pin',
+    'probe': 'đầu dò',
+    'sensor': 'cảm biến',
+    'cloud': 'đám mây',
+    'offline': 'mất kết nối',
+    'temperature': 'nhiệt độ',
+    'vaccine': 'vắc xin',
+    'freezer': 'tủ đông',
+    'fridge': 'tủ đông',
+    'display': 'màn hình',
+    'screen': 'màn hình',
+};
+
+// ============================================================
+// 🔧 SKILLS (S) — Logic tìm kiếm kịch bản
 // ============================================================
 const Skills = {
-    // Chatbot: find matching scenario
-    findScenario(query) {
-        query = query.toLowerCase().trim();
-        const scenarios = KnowledgeBase.chatbotScenarios;
-        let best = null, bestScore = 0;
-        for (const s of scenarios) {
-            let score = 0;
-            for (const kw of s.keywords) {
-                if (query.includes(kw)) score += kw.length;
-            }
-            if (score > bestScore) { bestScore = score; best = s; }
+    _pendingCandidates: [],
+
+    setPending(list) { this._pendingCandidates = list; },
+    clearPending() { this._pendingCandidates = []; },
+    getPending() { return this._pendingCandidates; },
+
+    expandSynonyms(query) {
+        let q = query;
+        for (const [en, vi] of Object.entries(SYNONYM_MAP)) {
+            q = q.replace(new RegExp('\\b' + en + '\\b', 'gi'), vi);
         }
-        return bestScore > 0 ? best : null;
+        return q;
     },
 
-    // Convert Google Form URL to embeddable URL
-    toEmbedUrl(url) {
-        url = url.trim();
-        // Already embed format
-        if (url.includes('embedded=true')) return url;
-        // Short link → we stored the resolved URL
-        if (url.includes('/viewform')) return url + (url.includes('?') ? '&' : '?') + 'embedded=true';
-        // forms.gle short link → convert
-        if (url.includes('forms.gle/')) {
-            // We can't resolve short links client-side, use as-is in iframe
-            return url;
+    // 🎯 2-Pass Scoring với deduplication
+    // Pass 1: Từ đơn exact match → điểm = length × 2 (ưu tiên cao nhất)
+    // Pass 2: Cụm từ exact → length × 2 | Từng chữ riêng lẻ → word length
+    // Mỗi từ/cụm CHỈ được tính điểm MỘT LẦN (usedParts)
+    scoreScenario(scenario, query) {
+        const q = query.toLowerCase();
+        const usedParts = new Set();
+        let score = 0;
+
+        // === Pass 1: Từ đơn (single-word) — không chứa dấu cách ===
+        for (const kw of scenario.keywords) {
+            const kwLower = kw.toLowerCase();
+            if (kwLower.includes(' ')) continue;
+            if (q.includes(kwLower) && !usedParts.has(kwLower)) {
+                score += kwLower.length * 2;
+                usedParts.add(kwLower);
+            }
         }
-        // Google Form edit URL → convert to viewform
-        const match = url.match(/\/forms\/d\/([^/]+)/);
-        if (match) {
-            return `https://docs.google.com/forms/d/${match[1]}/viewform?embedded=true`;
+
+        // === Pass 2: Cụm từ nhiều chữ ===
+        for (const kw of scenario.keywords) {
+            const kwLower = kw.toLowerCase();
+            if (!kwLower.includes(' ')) continue;
+
+            if (q.includes(kwLower) && !usedParts.has(kwLower)) {
+                // Khớp cả cụm từ → điểm cao
+                score += kwLower.length * 2;
+                usedParts.add(kwLower);
+                // Đánh dấu từng chữ con để tránh tính trùng
+                kwLower.split(/\s+/).filter(p => p.length >= 3).forEach(p => usedParts.add(p));
+            } else {
+                // Khớp từng chữ riêng lẻ trong cụm
+                const parts = kwLower.split(/\s+/).filter(p => p.length >= 3);
+                for (const part of parts) {
+                    if (q.includes(part) && !usedParts.has(part)) {
+                        score += part.length;
+                        usedParts.add(part);
+                    }
+                }
+            }
         }
-        return url;
+
+        return score;
+    },
+
+    findScenario(rawQuery) {
+        const trimmed = rawQuery.trim();
+
+        // 🔢 Ưu tiên 0: Người dùng chọn số từ danh sách ("1", "2", "3"...)
+        const numMatch = trimmed.match(/^(\d+)$/);
+        if (numMatch && this._pendingCandidates.length > 0) {
+            const idx = parseInt(numMatch[1], 10) - 1;
+            if (idx >= 0 && idx < this._pendingCandidates.length) {
+                const chosen = this._pendingCandidates[idx];
+                this.clearPending();
+                return { result: 'exact', match: chosen };
+            }
+        }
+
+        // Mở rộng từ đồng nghĩa trước khi tìm kiếm
+        const query = this.expandSynonyms(rawQuery.toLowerCase());
+
+        // Tính điểm cho tất cả kịch bản, lọc điểm >= 6 (ngưỡng tối thiểu)
+        const MIN_SCORE = 6;
+        const scored = KnowledgeBase.chatbotScenarios
+            .map(s => ({ scenario: s, score: this.scoreScenario(s, query) }))
+            .filter(x => x.score >= MIN_SCORE)
+            .sort((a, b) => b.score - a.score);
+
+        if (scored.length === 0) {
+            this.clearPending();
+            return { result: 'none', match: null, candidates: [] };
+        }
+
+        // Nếu điểm cao nhất vượt trội (top score > 65% so với điểm 2) → trả kết quả chính xác
+        const topScore = scored[0].score;
+        const closeMatches = scored.filter(x => x.score >= topScore * 0.65);
+
+        if (closeMatches.length === 1) {
+            this.clearPending();
+            return { result: 'exact', match: closeMatches[0].scenario, candidates: [] };
+        }
+
+        // Nhiều kịch bản tương nhau → hiển thị danh sách để chọn
+        const candidates = closeMatches.slice(0, 5).map(x => x.scenario);
+        this.setPending(candidates);
+        return { result: 'suggestions', match: null, candidates };
+    },
+
+    // Parse contact string "QA A: 0123 / QA B: 0456" → array of {name, phone, display}
+    parseContacts(contactStr) {
+        if (!contactStr) return [];
+        return contactStr.split(/\s*\/\s*|\n/).map(part => {
+            const trimmed = part.trim();
+            // Match phone number pattern (Vietnamese: 10-11 digits)
+            const phoneMatch = trimmed.match(/(\d{9,11})/);
+            if (phoneMatch) {
+                const phone = phoneMatch[1];
+                const name = trimmed.replace(phoneMatch[0], '').replace(/:\s*$/, '').trim();
+                return { name, phone, display: trimmed };
+            }
+            return { name: trimmed, phone: null, display: trimmed };
+        }).filter(c => c.display);
     },
 };
 
 // ============================================================
-// 🖥️ UI CONTROLLER
+// 🎮 UI CONTROLLER — Quản lý giao diện
 // ============================================================
 const UI = {
+    elements: {
+        tabs: document.querySelectorAll('.tab-btn'),
+        tabContents: document.querySelectorAll('.tab-content'),
+        formSetup: document.getElementById('formSetup'),
+        formContainer: document.getElementById('formContainer'),
+        googleFormUrl: document.getElementById('googleFormUrl'),
+        btnEmbed: document.getElementById('btnEmbed'),
+        iframe: document.getElementById('googleFormIframe'),
+        btnChangeForm: document.getElementById('btnChangeForm'),
+        btnOpenNew: document.getElementById('btnOpenNew'),
+        chatContainer: document.getElementById('chatContainer'),
+        chatInput: document.getElementById('chatInput'),
+        btnSend: document.getElementById('btnSend'),
+    },
+
+    _typingEl: null,
+
     init() {
-        this.bindTabs();
-        this.bindChatbot();
-        this.bindGoogleFormEmbed();
+        this.loadFormUrl();
+        this.addEventListeners();
+        this.showWelcomeMessage();
     },
 
-    // --- Tabs ---
-    bindTabs() {
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                btn.classList.add('active');
-                document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
-                if (btn.dataset.tab === 'support') this.initChatbot();
-            });
+    addEventListeners() {
+        this.elements.tabs.forEach(btn => {
+            btn.addEventListener('click', () => this.switchTab(btn.dataset.tab));
         });
-    },
-
-    // ============================================================
-    // 📋 GOOGLE FORM EMBED
-    // ============================================================
-    bindGoogleFormEmbed() {
-        const setupCard = document.getElementById('formSetup');
-        const container = document.getElementById('formContainer');
-        const urlInput = document.getElementById('googleFormUrl');
-        const iframe = document.getElementById('googleFormIframe');
-        const btnEmbed = document.getElementById('btnEmbed');
-        const btnChange = document.getElementById('btnChangeForm');
-        const btnOpenNew = document.getElementById('btnOpenNew');
-
-        // Load saved URL or use default
-        const savedUrl = localStorage.getItem(CONFIG.STORAGE_KEY);
-        const formUrl = savedUrl || CONFIG.DEFAULT_FORM_URL;
-
-        if (formUrl) {
-            this.loadForm(formUrl);
-        }
-
-        // Embed button
-        btnEmbed.addEventListener('click', () => {
-            const url = urlInput.value.trim();
-            if (!url) {
-                this.showToast('⚠️ Vui lòng paste link Google Form', 'warning');
-                return;
-            }
-            const embedUrl = Skills.toEmbedUrl(url);
-            localStorage.setItem(CONFIG.STORAGE_KEY, embedUrl);
-            this.loadForm(embedUrl);
-            this.showToast('✅ Đã nhúng Google Form thành công!', 'success');
-        });
-
-        // Change form button
-        btnChange.addEventListener('click', () => {
-            setupCard.style.display = 'block';
-            urlInput.value = localStorage.getItem(CONFIG.STORAGE_KEY) || '';
-            urlInput.focus();
-        });
-
-        // Open in new tab
-        btnOpenNew.addEventListener('click', () => {
+        this.elements.btnEmbed.addEventListener('click', () => this.saveFormUrl());
+        this.elements.btnChangeForm.addEventListener('click', () => this.resetForm());
+        this.elements.btnOpenNew.addEventListener('click', () => {
             const url = localStorage.getItem(CONFIG.STORAGE_KEY) || CONFIG.DEFAULT_FORM_URL;
-            const viewUrl = url.replace('?embedded=true', '').replace('&embedded=true', '');
-            window.open(viewUrl, '_blank');
+            window.open(url, '_blank');
+        });
+        this.elements.btnSend.addEventListener('click', () => this.handleChatSubmit());
+        this.elements.chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') this.handleChatSubmit();
         });
     },
 
-    loadForm(url) {
-        const setupCard = document.getElementById('formSetup');
-        const container = document.getElementById('formContainer');
-        const iframe = document.getElementById('googleFormIframe');
-
-        iframe.src = url;
-        setupCard.style.display = 'none';
-        container.style.display = 'block';
+    switchTab(tabId) {
+        this.elements.tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === tabId));
+        this.elements.tabContents.forEach(c => c.classList.toggle('active', c.id === `tab-${tabId}`));
     },
 
-    // --- Toast ---
+    // ── Google Form ──────────────────────────────────────────
+    loadFormUrl() {
+        const savedUrl = localStorage.getItem(CONFIG.STORAGE_KEY) || CONFIG.DEFAULT_FORM_URL;
+        if (savedUrl) {
+            this.renderForm(savedUrl);
+        } else {
+            this.elements.formSetup.style.display = 'block';
+            this.elements.formContainer.style.display = 'none';
+        }
+    },
+
+    saveFormUrl() {
+        const url = this.elements.googleFormUrl.value.trim();
+        if (!url) return this.showToast('Vui lòng nhập URL Google Form', 'error');
+        localStorage.setItem(CONFIG.STORAGE_KEY, url);
+        this.renderForm(url);
+    },
+
+    renderForm(url) {
+        this.elements.formSetup.style.display = 'none';
+        this.elements.formContainer.style.display = 'block';
+        let embedUrl = url;
+        if (url.includes('/viewform') && !url.includes('embedded=true')) {
+            embedUrl += (url.includes('?') ? '&' : '?') + 'embedded=true';
+        }
+        this.elements.iframe.src = embedUrl;
+    },
+
+    resetForm() {
+        if (confirm('Bạn có muốn đổi Google Form khác?')) {
+            localStorage.removeItem(CONFIG.STORAGE_KEY);
+            location.reload();
+        }
+    },
+
+    // ── Chatbot ──────────────────────────────────────────────
+    showWelcomeMessage() {
+        this._botBubble(
+            'Xin chào Anh/Chị! 👋 Mình là Trợ lý Cold Chain của FPT Long Châu.\n' +
+            'Hãy mô tả sự cố hoặc từ khóa để mình tìm hướng xử lý nhé!'
+        );
+        this._quickReplies([
+            { text: '🔋 Pin / Logtag', query: 'pin logtag' },
+            { text: '📟 Màn hình Logtag', query: 'màn hình không hiển thị' },
+            { text: '🌐 WiFi / Mạng', query: 'mất kết nối wifi' },
+            { text: '📤 RSA / Upload', query: 'rsa lcnb không đẩy' },
+            { text: '💉 Vắc xin', query: 'vắc xin hết hạn' },
+            { text: '🧊 Tủ / Đá gel', query: 'tủ ngang đá gel' },
+        ]);
+    },
+
+    handleChatSubmit() {
+        const text = this.elements.chatInput.value.trim();
+        if (!text) return;
+        this._userBubble(text);
+        this.elements.chatInput.value = '';
+        this._showTyping();
+        setTimeout(() => {
+            this._removeTyping();
+            const result = Skills.findScenario(text);
+            this.processBotResponse(result, text);
+        }, 550);
+    },
+
+    processBotResponse(obj, originalQuery) {
+        if (obj.result === 'exact') {
+            this.renderScenarioDetail(obj.match);
+        } else if (obj.result === 'suggestions') {
+            this.renderCandidateList(obj.candidates);
+        } else {
+            this.renderNoMatch(originalQuery || '');
+        }
+    },
+
+    // ✅ Render chi tiết một kịch bản
+    renderScenarioDetail(s) {
+        const contacts = Skills.parseContacts(s.contact);
+        const imagesArr = s.images || [];
+
+        const stepsHtml = s.steps.map((st, i) =>
+            `<div class="step-item">
+                <span class="step-num">${i + 1}</span>
+                <span class="step-text">${st}</span>
+            </div>`
+        ).join('');
+
+        const contactHtml = contacts.length > 0 ? `
+            <div class="contact-section">
+                <div class="contact-label">📞 Liên hệ nếu chưa giải quyết được:</div>
+                ${contacts.map(c => `
+                    <div class="contact-line">
+                        <span class="contact-name">${c.display}</span>
+                        ${c.phone
+                            ? `<button class="btn-copy-phone" onclick="copyPhone('${c.phone}')" title="Copy số điện thoại">📋 Copy</button>`
+                            : ''}
+                    </div>
+                `).join('')}
+            </div>` : '';
+
+        const imagesHtml = imagesArr.length > 0 ? `
+            <div class="scenario-images">
+                ${imagesArr.map(img =>
+                    `<img src="${img}" class="scenario-img" alt="${s.title}" onerror="this.style.display='none'">`
+                ).join('')}
+            </div>` : '';
+
+        const html = `
+            <div class="scenario-card">
+                <div class="scenario-header">
+                    <span class="badge-ok">✅ #${s.stt}</span>
+                    <span class="scenario-icon">${s.icon || '🛠️'}</span>
+                    <strong>${s.title}</strong>
+                </div>
+                <div class="scenario-body">
+                    <div class="steps-list">${stepsHtml}</div>
+                    ${imagesHtml}
+                    ${contactHtml}
+                </div>
+            </div>`;
+        this._botBubble(html, true);
+    },
+
+    // 📋 Render danh sách kịch bản khi nhiều kết quả
+    renderCandidateList(candidates) {
+        const NUMS = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣'];
+        const html = `
+            <div class="candidate-list">
+                <p>Mình tìm thấy <strong>${candidates.length}</strong> kịch bản có thể liên quan.<br>Anh/Chị đang gặp vấn đề nào?</p>
+                <div class="candidate-items">
+                    ${candidates.map((s, i) => `
+                        <button class="candidate-btn" onclick="UI._pickCandidate(${i})">
+                            <span class="candidate-num">${NUMS[i] || (i + 1) + '.'}</span>
+                            <span>${s.icon || ''} ${s.title}</span>
+                        </button>
+                    `).join('')}
+                </div>
+                <p class="candidate-hint">→ Nhấn vào kịch bản hoặc nhập số (1, 2, 3...)</p>
+            </div>`;
+        this._botBubble(html, true);
+    },
+
+    _pickCandidate(idx) {
+        const candidates = Skills.getPending();
+        if (idx >= 0 && idx < candidates.length) {
+            const chosen = candidates[idx];
+            Skills.clearPending();
+            this._userBubble(chosen.title);
+            this._showTyping();
+            setTimeout(() => {
+                this._removeTyping();
+                this.renderScenarioDetail(chosen);
+            }, 400);
+        }
+    },
+
+    // ❌ Render khi không tìm thấy kịch bản
+    renderNoMatch(query) {
+        const html = `
+            <div class="no-match-card">
+                <div class="no-match-header">❌ Mình chưa tìm được kịch bản phù hợp với "<strong>${query}</strong>".</div>
+                <p class="no-match-hint">Bạn có thể thử lại với từ khóa như:<br>
+                    <em>pin, logtag, wifi, tủ đông, RSA, vắc xin, BCG, đầu dò...</em>
+                </p>
+                <div class="contact-section">
+                    <div class="contact-label">Hoặc liên hệ trực tiếp QA để được hỗ trợ:</div>
+                    <div class="contact-line">
+                        <span class="contact-name">QA AnhNTM67: ${CONFIG.QA_FALLBACK_PHONE}</span>
+                        <button class="btn-copy-phone" onclick="copyPhone('${CONFIG.QA_FALLBACK_PHONE}')" title="Copy số">📋 Copy</button>
+                    </div>
+                </div>
+            </div>`;
+        this._botBubble(html, true);
+    },
+
+    // ── Internal bubble helpers ──────────────────────────────
+    _botBubble(content, isHTML = false) {
+        const wrap = document.createElement('div');
+        wrap.className = 'chat-msg bot';
+
+        const av = document.createElement('div');
+        av.className = 'chat-avatar';
+        av.textContent = '🤖';
+
+        const bub = document.createElement('div');
+        bub.className = 'chat-bubble';
+        if (isHTML) bub.innerHTML = content;
+        else { bub.style.whiteSpace = 'pre-line'; bub.innerText = content; }
+
+        wrap.appendChild(av);
+        wrap.appendChild(bub);
+        this.elements.chatContainer.appendChild(wrap);
+        this.elements.chatContainer.scrollTop = this.elements.chatContainer.scrollHeight;
+    },
+
+    _userBubble(content) {
+        const wrap = document.createElement('div');
+        wrap.className = 'chat-msg user';
+
+        const av = document.createElement('div');
+        av.className = 'chat-avatar';
+        av.textContent = '👤';
+
+        const bub = document.createElement('div');
+        bub.className = 'chat-bubble';
+        bub.innerText = content;
+
+        wrap.appendChild(av);
+        wrap.appendChild(bub);
+        this.elements.chatContainer.appendChild(wrap);
+        this.elements.chatContainer.scrollTop = this.elements.chatContainer.scrollHeight;
+    },
+
+    _quickReplies(items) {
+        const wrap = document.createElement('div');
+        wrap.className = 'chat-msg bot';
+
+        const av = document.createElement('div');
+        av.className = 'chat-avatar';
+        av.textContent = '🤖';
+
+        const box = document.createElement('div');
+        box.className = 'chat-quick-replies';
+
+        items.forEach(item => {
+            const btn = document.createElement('button');
+            btn.className = 'chat-quick-btn';
+            btn.innerText = item.text;
+            btn.onclick = () => {
+                this._userBubble(item.text);
+                this._showTyping();
+                setTimeout(() => {
+                    this._removeTyping();
+                    const result = Skills.findScenario(item.query || item.text);
+                    this.processBotResponse(result, item.query || item.text);
+                }, 500);
+            };
+            box.appendChild(btn);
+        });
+
+        wrap.appendChild(av);
+        wrap.appendChild(box);
+        this.elements.chatContainer.appendChild(wrap);
+        this.elements.chatContainer.scrollTop = this.elements.chatContainer.scrollHeight;
+    },
+
+    _showTyping() {
+        if (this._typingEl) return;
+        const wrap = document.createElement('div');
+        wrap.className = 'chat-msg bot';
+        wrap.id = 'typing-indicator';
+
+        const av = document.createElement('div');
+        av.className = 'chat-avatar';
+        av.textContent = '🤖';
+
+        const bub = document.createElement('div');
+        bub.className = 'chat-bubble typing-bubble';
+        bub.innerHTML = '<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
+
+        wrap.appendChild(av);
+        wrap.appendChild(bub);
+        this.elements.chatContainer.appendChild(wrap);
+        this._typingEl = wrap;
+        this.elements.chatContainer.scrollTop = this.elements.chatContainer.scrollHeight;
+    },
+
+    _removeTyping() {
+        if (this._typingEl) {
+            this._typingEl.remove();
+            this._typingEl = null;
+        }
+    },
+
     showToast(msg, type = 'info') {
-        const container = document.getElementById('toast-container');
         const toast = document.createElement('div');
         toast.className = `toast toast-${type}`;
         toast.textContent = msg;
-        container.appendChild(toast);
-        setTimeout(() => { toast.classList.add('toast-out'); setTimeout(() => toast.remove(), 300); }, 4000);
-    },
-
-    // ============================================================
-    // 💬 CHATBOT
-    // ============================================================
-    chatInitialized: false,
-
-    bindChatbot() {
-        document.getElementById('btnSend').addEventListener('click', () => this.handleChatInput());
-        document.getElementById('chatInput').addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') this.handleChatInput();
-        });
-    },
-
-    initChatbot() {
-        if (this.chatInitialized) return;
-        this.chatInitialized = true;
-        const container = document.getElementById('chatContainer');
-        container.innerHTML = '';
-
-        this.addBotMessage('Xin chào! 👋 Tôi là trợ lý hỗ trợ xử trí sự cố dây truyền lạnh. Bạn đang gặp vấn đề gì?');
-
-        // Show scenario buttons
-        const btnsHtml = KnowledgeBase.chatbotScenarios.map(s =>
-            `<button class="chat-quick-btn" data-scenario="${s.id}">${s.icon} ${s.title}</button>`
-        ).join('');
-        const contactBtn = `<button class="chat-quick-btn contact-qa" data-action="contact">📞 Liên hệ QA trực tiếp</button>`;
-        this.addBotMessage('Chọn một vấn đề hoặc nhập mô tả sự cố:', btnsHtml + contactBtn);
-
-        // Bind buttons via event delegation
-        container.addEventListener('click', (e) => {
-            const btn = e.target.closest('.chat-quick-btn');
-            if (!btn) return;
-            const scenarioId = btn.dataset.scenario;
-            const action = btn.dataset.action;
-
-            if (action === 'contact') {
-                this.showQAContact();
-            } else if (action === 'resolved') {
-                this.addUserMessage('✅ Đã giải quyết được!');
-                this.addBotMessage('Tuyệt vời! 🎉 Rất vui đã giúp được bạn. Nếu cần hỗ trợ thêm, hãy chọn vấn đề khác hoặc liên hệ QA.');
-                this.showMainMenu();
-            } else if (action === 'not-resolved') {
-                this.addUserMessage('❌ Chưa giải quyết được');
-                this.addBotMessage('Tôi hiểu. Hãy liên hệ QA để được hỗ trợ trực tiếp:');
-                this.showQAContact();
-                this.showMainMenu();
-            } else if (action === 'back') {
-                this.addUserMessage('↩️ Quay lại menu');
-                this.showMainMenuMessage();
-            } else if (scenarioId) {
-                this.handleScenarioClick(scenarioId);
-            }
-        });
-    },
-
-    handleScenarioClick(scenarioId) {
-        const scenario = KnowledgeBase.chatbotScenarios.find(s => s.id === scenarioId);
-        if (!scenario) return;
-
-        this.addUserMessage(scenario.title);
-
-        // Build steps HTML
-        let stepsHtml = '<div class="chat-steps">';
-        scenario.steps.forEach((step, i) => {
-            stepsHtml += `<div class="chat-step"><span class="chat-step-num">${i + 1}</span><span class="chat-step-text">${step}</span></div>`;
-        });
-        stepsHtml += '</div>';
-
-        if (scenario.note) {
-            stepsHtml += `<div style="margin-top:.5rem;padding:.5rem;background:rgba(255,170,0,0.08);border-radius:6px;font-size:.8rem;color:var(--risk-warning)">💡 ${scenario.note}</div>`;
-        }
-
-        stepsHtml += `<div class="chat-quick-replies" style="margin-top:.75rem">
-            <button class="chat-quick-btn" data-action="resolved">✅ Đã giải quyết</button>
-            <button class="chat-quick-btn" data-action="not-resolved">❌ Chưa giải quyết</button>
-            <button class="chat-quick-btn" data-action="back">↩️ Quay lại</button>
-        </div>`;
-
-        this.addBotMessage(`Hướng dẫn xử trí: <strong>${scenario.title}</strong>`, stepsHtml);
-    },
-
-    handleChatInput() {
-        const input = document.getElementById('chatInput');
-        const query = input.value.trim();
-        if (!query) return;
-        input.value = '';
-
-        this.addUserMessage(query);
-
-        // Search for matching scenario
-        const match = Skills.findScenario(query);
-        if (match) {
-            this.handleScenarioClick(match.id);
-        } else {
-            this.addBotMessage('Tôi chưa tìm thấy kịch bản phù hợp. Hãy thử chọn từ danh sách hoặc liên hệ QA:');
-            this.showQAContact();
-            this.showMainMenu();
-        }
-    },
-
-    showQAContact() {
-        const qa = KnowledgeBase.qaContact;
-        const html = `<div class="qa-contact-card">
-            <div class="qa-contact-name">👤 ${qa.name}</div>
-            <div class="qa-contact-phone">${qa.phone}
-                <button class="btn-copy" onclick="navigator.clipboard.writeText('${qa.phone.replace(/\s/g, '')}');this.textContent='✅ Đã copy'">📋 Copy</button>
-            </div>
-            <div class="qa-contact-hint">💡 Copy số điện thoại → Tìm kiếm trên Zalo để liên hệ QA</div>
-        </div>`;
-        this.addBotMessage('Thông tin liên hệ QA:', html);
-    },
-
-    showMainMenu() {
-        const btns = KnowledgeBase.chatbotScenarios.map(s =>
-            `<button class="chat-quick-btn" data-scenario="${s.id}">${s.icon} ${s.title}</button>`
-        ).join('');
-        const contact = `<button class="chat-quick-btn contact-qa" data-action="contact">📞 Liên hệ QA</button>`;
-        this.addBotMessage('Bạn cần hỗ trợ thêm?', btns + contact);
-    },
-
-    showMainMenuMessage() {
-        this.showMainMenu();
-    },
-
-    addBotMessage(text, extraHtml = '') {
-        const container = document.getElementById('chatContainer');
-        const div = document.createElement('div');
-        div.className = 'chat-msg bot';
-        div.innerHTML = `<div class="chat-avatar">🤖</div><div class="chat-bubble">${text}${extraHtml}</div>`;
-        container.appendChild(div);
-        container.scrollTop = container.scrollHeight;
-    },
-
-    addUserMessage(text) {
-        const container = document.getElementById('chatContainer');
-        const div = document.createElement('div');
-        div.className = 'chat-msg user';
-        div.innerHTML = `<div class="chat-avatar">👩‍⚕️</div><div class="chat-bubble">${text}</div>`;
-        container.appendChild(div);
-        container.scrollTop = container.scrollHeight;
+        document.getElementById('toast-container').appendChild(toast);
+        setTimeout(() => {
+            toast.classList.add('toast-out');
+            setTimeout(() => toast.remove(), 350);
+        }, 2500);
     },
 };
 
 // ============================================================
-// 🚀 INITIALIZATION
+// 🌐 GLOBAL HELPERS
 // ============================================================
+function copyPhone(phone) {
+    navigator.clipboard.writeText(phone)
+        .then(() => UI.showToast(`✅ Đã copy: ${phone}`, 'success'))
+        .catch(() => {
+            // Fallback for non-HTTPS
+            const el = document.createElement('input');
+            el.value = phone;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            UI.showToast(`✅ Đã copy: ${phone}`, 'success');
+        });
+}
+
 document.addEventListener('DOMContentLoaded', () => UI.init());
