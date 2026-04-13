@@ -1268,4 +1268,344 @@ body {
   }
 }
 
+/* ============================================================
+   NOTIFICATION PANEL — Left of chatbot (blue "Nhắc lại")
+   ============================================================ */
+.notif-panel {
+  width: 270px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 80px;
+  align-self: flex-start;
+}
+
+.notif-card-inner {
+  background: #0d1018;
+  border: 1px solid rgba(30, 80, 180, 0.3);
+  border-radius: 14px;
+  padding: 18px 16px 14px;
+  position: relative;
+  box-shadow:
+    0 0 0 1px rgba(26,110,245,0.07),
+    0 8px 36px rgba(0,0,0,0.5),
+    0 2px 12px rgba(26,110,245,0.1);
+  font-family: 'Sora', 'Inter', sans-serif;
+}
+
+/* top glow line */
+.notif-card-inner::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 18px; right: 18px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, #1a6ef5 40%, #00cfff 60%, transparent 100%);
+  opacity: 0.45;
+}
+
+/* inner gradient overlay */
+.notif-card-inner::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  background: linear-gradient(140deg, rgba(26,110,245,0.06) 0%, transparent 55%);
+  pointer-events: none;
+}
+
+/* unread blinking dot */
+.np-unread {
+  position: absolute;
+  top: 13px; right: 13px;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #00cfff;
+  box-shadow: 0 0 8px #00cfff;
+  animation: np-blink 2s ease-in-out infinite;
+  z-index: 1;
+}
+@keyframes np-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+/* header row */
+.np-header {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 12px;
+  position: relative;
+  z-index: 1;
+}
+
+/* icon circle */
+.np-icon {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+}
+.np-icon-blue {
+  background: rgba(26,110,245,0.15);
+  color: #1a6ef5;
+}
+/* pulse ring */
+.np-icon::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 1.5px solid currentColor;
+  opacity: 0;
+  animation: np-pulse 2.8s ease-out infinite;
+}
+@keyframes np-pulse {
+  0%   { opacity: 0.5; transform: scale(1); }
+  100% { opacity: 0;   transform: scale(1.45); }
+}
+
+/* badge */
+.np-badge {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2.5px 7px;
+  border-radius: 99px;
+  line-height: 1;
+}
+.np-badge-blue {
+  background: rgba(26,110,245,0.18);
+  color: #5a9ffb;
+  border: 1px solid rgba(26,110,245,0.3);
+}
+
+/* title */
+.np-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #cce0ff;
+  line-height: 1.4;
+  margin-bottom: 10px;
+  letter-spacing: 0.01em;
+  position: relative;
+  z-index: 1;
+}
+
+/* body */
+.np-body {
+  font-size: 11px;
+  color: #5a7aaa;
+  line-height: 1.75;
+  font-weight: 400;
+  margin-bottom: 12px;
+  max-height: 160px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(26,110,245,0.3) transparent;
+  position: relative;
+  z-index: 1;
+}
+.np-body::-webkit-scrollbar { width: 3px; }
+.np-body::-webkit-scrollbar-thumb { background: rgba(26,110,245,0.35); border-radius: 9px; }
+
+/* text helpers */
+.np-hl   { color: #8aaad4; font-weight: 500; }
+.np-crit { color: #f5a623; font-weight: 600; }
+.np-ok   { color: #00c896; font-weight: 600; }
+.np-mono {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  background: rgba(26,110,245,0.12);
+  padding: 1px 5px;
+  border-radius: 4px;
+  color: #00cfff;
+}
+.np-sign {
+  color: #8aaad4;
+  font-size: 10px;
+}
+
+/* list */
+.np-list {
+  margin: 4px 0 4px 16px;
+  list-style: none;
+}
+.np-list li {
+  position: relative;
+  padding-left: 12px;
+  margin-bottom: 5px;
+}
+.np-list li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: #1a6ef5;
+}
+
+/* arrow note block */
+.np-arrow-note {
+  margin: 5px 0;
+  padding: 6px 9px;
+  border-left: 2px solid #1a6ef5;
+  background: rgba(26,110,245,0.07);
+  border-radius: 0 6px 6px 0;
+  font-size: 10.5px;
+  color: #8aaad4;
+}
+
+/* separator */
+.np-sep {
+  border: none;
+  border-top: 1px solid rgba(30, 80, 180, 0.2);
+  margin: 7px 0;
+}
+
+/* divider line */
+.np-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(30,80,180,0.2) 30%, rgba(30,80,180,0.2) 70%, transparent 100%);
+  margin-bottom: 10px;
+  position: relative;
+  z-index: 1;
+}
+
+/* footer */
+.np-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  z-index: 1;
+}
+.np-time {
+  font-size: 10px;
+  color: #5a7aaa;
+  font-family: 'JetBrains Mono', monospace;
+  opacity: 0.8;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.np-source {
+  font-size: 9.5px;
+  color: #1a6ef5;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  opacity: 0.75;
+}
+
+/* ── responsive: stack notification panel below chatbot on narrow screens ── */
+@media(max-width: 1100px) {
+  .notif-panel {
+    position: static;
+    width: 100%;
+    max-width: 800px;
+  }
+  .np-body {
+    max-height: none;
+  }
+}
+
+/* ── Carousel slides ── */
+.np-slides-wrap {
+  /* no overflow:hidden here — np-body handles internal scroll */
+}
+
+.np-slide {
+  display: none;
+  animation: np-slide-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.np-slide.active {
+  display: block;
+}
+
+@keyframes np-slide-in {
+  from { opacity: 0; transform: translateY(7px) scale(0.99); }
+  to   { opacity: 1; transform: translateY(0)  scale(1); }
+}
+
+/* ── yellow icon variant ── */
+.np-icon-yellow {
+  background: rgba(245, 166, 35, 0.15);
+  color: #f5a623;
+}
+
+/* ── yellow badge variant ── */
+.np-badge-yellow {
+  background: rgba(245, 166, 35, 0.18);
+  color: #f5c76a;
+  border: 1px solid rgba(245, 166, 35, 0.3);
+}
+
+/* ── nav bar (arrows + dots) ── */
+.np-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(30, 80, 180, 0.15);
+  position: relative;
+  z-index: 1;
+}
+
+/* arrow buttons */
+.np-arrow {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid rgba(30, 80, 180, 0.3);
+  background: rgba(26, 110, 245, 0.07);
+  color: #5a7aaa;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.22s ease;
+  padding: 0;
+}
+.np-arrow:hover:not(:disabled) {
+  border-color: rgba(26, 110, 245, 0.55);
+  color: #00cfff;
+  background: rgba(26, 110, 245, 0.14);
+  box-shadow: 0 0 8px rgba(0, 207, 255, 0.2);
+  transform: scale(1.1);
+}
+.np-arrow:disabled {
+  opacity: 0.2;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* dot indicators */
+.np-dots {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.np-dot {
+  height: 5px;
+  width: 5px;
+  border-radius: 99px;
+  border: none;
+  background: rgba(90, 122, 170, 0.35);
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.np-dot.active {
+  width: 16px;
+  background: linear-gradient(90deg, #1a6ef5, #00cfff);
+  box-shadow: 0 0 6px rgba(0, 207, 255, 0.5);
+}
+.np-dot:hover:not(.active) {
+  background: rgba(90, 122, 170, 0.65);
+}
 

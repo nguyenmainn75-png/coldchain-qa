@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cold Chain QA — Giám sát Dây truyền Lạnh</title>
     <meta name="description" content="Hệ thống giám sát chất lượng dây truyền lạnh cho trung tâm tiêm chủng">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -57,6 +57,115 @@
     <!-- ============ TAB 2: SUPPORT CHATBOT ============ -->
     <section id="tab-support" class="tab-content">
         <div class="chat-layout">
+
+            <!-- ══════ NOTIFICATION PANEL (LEFT) ══════ -->
+            <aside class="notif-panel" id="notifPanel" aria-label="Thông báo nội bộ">
+                <div class="notif-card-inner">
+                    <!-- unread dot -->
+                    <span class="np-unread" id="np-unread-dot" aria-hidden="true"></span>
+
+                    <!-- ── SLIDE CONTAINER ── -->
+                    <div class="np-slides-wrap">
+
+                        <!-- SLIDE 1 — Hiệu chuẩn (Blue) -->
+                        <div class="np-slide active" id="np-slide-0">
+                            <div class="np-header">
+                                <div class="np-icon np-icon-blue" aria-hidden="true">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                                        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                                    </svg>
+                                </div>
+                                <span class="np-badge np-badge-blue">Nhắc lại</span>
+                            </div>
+
+                            <div class="np-title">THÔNG BÁO NHẮC LẠI — Hiệu Chuẩn Dây Truyền Lạnh</div>
+
+                            <div class="np-body">
+                                <span class="np-hl">Dear anh chị <span class="np-crit">@All</span></span>
+                                <p>Trong quá trình hiệu chuẩn, đề nghị Điều dưỡng lưu ý:</p>
+                                <ul class="np-list">
+                                    <li><strong class="np-hl">Tủ đứng:</strong> Nhiệt độ sẽ tăng — <span class="np-crit">không được chứa vaccine</span>. Toàn bộ vaccine phải dời sang tủ ngang.</li>
+                                </ul>
+                                <div class="np-arrow-note">→ Trước khi hiệu chuẩn: <span class="np-crit">bắt buộc chụp hình</span> tình trạng tủ đứng đã trống vaccine + Nhiệt độ Logtag làm cơ sở ghi nhận.</div>
+                                <hr class="np-sep"/>
+                                <ul class="np-list">
+                                    <li><strong class="np-hl">Tủ ngang:</strong> Hiệu chuẩn đa điểm <span class="np-ok">không làm tăng nhiệt độ</span> — vaccine bảo quản an toàn, không cần di dời.</li>
+                                </ul>
+                                <hr class="np-sep"/>
+                                <ul class="np-list">
+                                    <li><strong class="np-hl">Đầu dò Logtag:</strong> Thiết bị Logtag chính sẽ bị tháo — <span class="np-crit">không còn thiết bị theo dõi nhiệt độ</span> trong tủ.</li>
+                                </ul>
+                                <div class="np-arrow-note">→ Bắt buộc đặt <span class="np-mono">01 Logtag LCNB</span> dự phòng vào tủ ngang trước khi hiệu chuẩn, xuất đủ dữ liệu &amp; báo cáo lên Sharepoint.</div>
+                                <br/>
+                                <em class="np-sign">Nhờ anh chị thực hiện đúng hướng dẫn.</em>
+                            </div>
+
+                            <div class="np-divider"></div>
+                            <div class="np-footer">
+                                <span class="np-time">
+                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                    13/04/2026
+                                </span>
+                                <span class="np-source">QA — FPT Long Châu</span>
+                            </div>
+                        </div><!-- /slide-0 -->
+
+                        <!-- SLIDE 2 — Nhận Logtag mới (Yellow) -->
+                        <div class="np-slide" id="np-slide-1">
+                            <div class="np-header">
+                                <div class="np-icon np-icon-yellow" aria-hidden="true">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                                        <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                                    </svg>
+                                </div>
+                                <span class="np-badge np-badge-yellow">Cảnh báo</span>
+                            </div>
+
+                            <div class="np-title">Nhận Logtag Mới — Liên hệ QA để Cài Đặt</div>
+
+                            <div class="np-body">
+                                <p>Anh/chị vui lòng <span class="np-hl">nhận Logtag mới từ Hành Chính</span> để thay thế Logtag cũ đang có tại shop.</p>
+                                <hr class="np-sep"/>
+                                <span class="np-hl">Liên hệ hỗ trợ cài đặt:</span><br/>
+                                QA <strong class="np-ok">QuyenDN4</strong><br/>
+                                <span class="np-mono" style="font-size:11px;">0765 647 301</span>
+                                <hr class="np-sep"/>
+                                <div class="np-arrow-note" style="border-color:#f5a623;background:rgba(245,166,35,0.07);">
+                                    ⚠ <span class="np-crit">Tuyệt đối KHÔNG tự cài đặt</span> Logtag mới khi chưa có hướng dẫn từ QA.
+                                </div>
+                            </div>
+
+                            <div class="np-divider"></div>
+                            <div class="np-footer">
+                                <span class="np-time">
+                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                    13/04/2026
+                                </span>
+                                <span class="np-source">QA — FPT Long Châu</span>
+                            </div>
+                        </div><!-- /slide-1 -->
+
+                    </div><!-- /np-slides-wrap -->
+
+                    <!-- ── NAV: arrows + dots ── -->
+                    <div class="np-nav">
+                        <button class="np-arrow" id="np-prev" aria-label="Thông báo trước" disabled>
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                        </button>
+                        <div class="np-dots" id="np-dots">
+                            <button class="np-dot active" data-idx="0" aria-label="Thông báo 1"></button>
+                            <button class="np-dot" data-idx="1" aria-label="Thông báo 2"></button>
+                        </div>
+                        <button class="np-arrow" id="np-next" aria-label="Thông báo tiếp theo">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                        </button>
+                    </div>
+
+                </div><!-- /notif-card-inner -->
+            </aside>
+
             <!-- Main Chat Area -->
             <div class="chat-main glass-card">
                 <div class="card-header-sleek">
@@ -174,6 +283,41 @@
         Cold Chain QA Agent v2.0 — FPT Long Châu Quality Assurance © 2026
     </footer>
 
+    <script>
+      (function () {
+        const TOTAL   = 2;
+        let current   = 0;
+
+        const slides  = document.querySelectorAll('.np-slide');
+        const dots    = document.querySelectorAll('.np-dot');
+        const btnPrev = document.getElementById('np-prev');
+        const btnNext = document.getElementById('np-next');
+        const unread  = document.getElementById('np-unread-dot');
+
+        function goTo(idx) {
+          slides[current].classList.remove('active');
+          dots[current].classList.remove('active');
+          current = idx;
+          slides[current].classList.add('active');
+          dots[current].classList.add('active');
+          btnPrev.disabled = current === 0;
+          btnNext.disabled = current === TOTAL - 1;
+          // dim unread dot after first navigation
+          if (current > 0 && unread) unread.style.opacity = '0';
+        }
+
+        btnPrev.addEventListener('click', function () { if (current > 0) goTo(current - 1); });
+        btnNext.addEventListener('click', function () { if (current < TOTAL - 1) goTo(current + 1); });
+
+        dots.forEach(function (dot) {
+          dot.addEventListener('click', function () { goTo(parseInt(this.dataset.idx)); });
+        });
+
+        // init state
+        btnPrev.disabled = true;
+        btnNext.disabled = false;
+      })();
+    </script>
     <script src="app.js"></script>
 </body>
 
